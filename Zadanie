@@ -185,9 +185,11 @@
         let Spain3 = new СyclistWithCountry('31', 'Miguel', 'Moreno', '338', 'Spain');
         let Spain4 = new СyclistWithCountry('32', 'Paola', ' Alegre', '478', 'Spain');
         let spanishСyclists = new OneCountryCyclistCollection('Spain', Spain1, Spain2, Spain3, Spain4);
+        
         let allcyclist = new AllCountryCyclistCollection(belgianСyclists, russianСyclists,
             danishСyclists, americanСyclists, germanСyclists,
             frenchСyclists, greekСyclists, finnishСyclists, italianСyclists, spanishСyclists);
+            
         let n;
         do {
            n = parseInt(window.prompt("Введите количество этапов", ""), 10);
