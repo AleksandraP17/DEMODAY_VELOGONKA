@@ -190,7 +190,7 @@
             frenchСyclists, greekСyclists, finnishСyclists, italianСyclists, spanishСyclists);
         let n;
         do {
-            n = parseInt(window.prompt("Введите количество этапов", ""), 10);
+           n = parseInt(window.prompt("Введите количество этапов", ""), 10);
         } while (isNaN(n));
         console.log("ПЕРВЫЙ КРУГ И ВЫПОЛНЕНИЕ ЭТАПОВ");
         allcyclist.firstProtocol(5);
