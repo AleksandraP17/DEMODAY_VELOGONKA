@@ -1,0 +1,204 @@
+<html>
+
+<body>
+    <script>
+
+        class Сyclist {                                             // базовый класс гонщика
+            constructor(number, name, lastname, rating) {
+                this.number = number;
+                this.name = name;
+                this.lastname = lastname;
+                this.rating = rating;
+            }
+        }
+
+        // создать подкласс гонщика с дополнительным полем country
+
+
+        class СyclistWithCountry extends Сyclist {
+            constructor(number, name, lastname, rating, country) {
+                super(number, name, lastname, rating);
+                this.country = country;
+            }
+        }
+
+
+        class OneCountryCyclistCollection extends Array {            // коллекция гонщиков одной страны
+            constructor(country, ...args) {
+                super(...args);
+                this.country = country;
+            }
+            push(country, ...args) {
+                if (this.country === country)
+                    super.push(args);
+            }
+            calculateMeanRating() {                                  // метод для подсчёта среднего арифмитического рейтинга
+
+                let ans = 0;
+
+                for (let i = 0; i < this.length; i++)
+                    ans += parseInt(this[i].rating);
+                return ans / this.length;
+            }
+
+        }
+
+        class AllCountryCyclistCollection extends Array {            // коллекция из коллекций гонщиков одной страны. содержит всех гонщиков
+            constructor(...args) {
+                if (args[0] instanceof OneCountryCyclistCollection)  // можно добавлять коллекцию гонщиков
+                    super(...args);
+            }
+            push(...args) {
+                if (args[0] instanceof OneCountryCyclistCollection)
+                    super.push(...args);
+            }
+
+            generateTimeFinish() {                                   // генерация времени заезда для каждого гонщика. Возвращает массив со всеми гонщиками, участвовавших в заезде
+
+                let ans = [];
+
+                for (let i = 0; i < this.length; i++) {
+                    for (let j = 0; j < this[i].length; j++) {
+                        this[i][j].time_finish = Math.floor(Math.random() * 1000);
+                        if (i === 0)
+                            this[i][j].sum_time = this[i][j].time_finish;
+                        else
+                            this[i][j].sum_time += this[i][j].time_finish;
+                        ans.push(this[i][j]);
+                    }
+                }
+
+                return ans;
+            }
+            getPositionForCyclists(cyclists, firstturn = true) {          // определяет позицию гонщиков в заезде
+
+                for (let i = 0; i < this.length; i++) {
+                    for (let j = 0; j < this[i].length; j++) {
+                        this[i][j].position = cyclists.indexOf(this[i][j]) + 1;
+                    }
+                    if (firstturn)
+                        this[i].sort((a, b) => { { return b.position - a.position; } });
+                    else
+                        this[i].sort((a, b) => { { return a.position - b.position; } });
+                }
+            }
+            simulateTurn(n, firstturn = true) {                             // симулирует круг из n этапов. firstturn = true для первого круга и false для второго
+
+                for (let i = 0; i < n; i++) {
+                    var ans = this.generateTimeFinish();
+                    ans.sort((a, b) => { return a.time_finish - b.time_finish; });
+                    this.getPositionForCyclists(ans, firstturn);
+                    for (let j = 0; j < this.length; j++) {
+                        if (i === 0)
+                            this[j].position = this[j][0].position;
+                        else
+                            this[j].position += this[j][0].position;
+                    }
+                }
+            }
+
+            secondProtocol() {                                             // сформировать второй протокол
+
+                while (this.length > 4)
+                    this.pop();
+                this.simulateTurn(2, false);
+                this.sort((a, b) => { return b.position - a.position || a.calculateMeanRating() - b.calculateMeanRating(); });
+                for (let i = 0; i < this.length; i++) {
+                    console.log(this[i][0].country, "заняла", i + 1, "место");
+                    for (let j = 0; j < this[i].length; j++) {
+                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
+                    }
+                }
+            }
+            firstProtocol(n) {                                             // сформировать первый протокол
+                this.simulateTurn(n)
+                for (let i = 0; i < this.length; i++)
+                    this[i].sort((a, b) => { return a.sum_time - b.sum_time });
+                this.sort((a, b) => { return a.position - b.position || a[0].sum_time - b[0].sum_time; });
+                for (let i = 0; i < this.length; i++) {
+                    console.log(this[i][0].country, "заняла", i + 1, "место");
+                    for (let j = 0; j < this[i].length; j++) {
+                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
+                    }
+                }
+            }
+        }
+
+        // экземпляр гонщиков всех стран
+
+        let Belgium1 = new СyclistWithCountry('1', 'Wout', 'Van Aert', '2000', 'Belgium');
+        let Belgium2 = new СyclistWithCountry('2', 'Florian', 'Vermeersch', '700', 'Belgium');
+        let Belgium3 = new СyclistWithCountry('3', 'Maria', 'Dumont', '500', 'Belgium');
+        let Belgium4 = new СyclistWithCountry('4', 'Nicole', 'Claes', '400', 'Belgium');
+        let belgianСyclists = new OneCountryCyclistCollection('Belgium', Belgium1, Belgium2, Belgium3, Belgium4);
+
+        let Russia1 = new СyclistWithCountry('1', 'Ivan', 'Zolotarev', '2200', 'Russia');
+        let Russia2 = new СyclistWithCountry('2', 'Petr', 'Ivanov', '730', 'Russia');
+        let Russia3 = new СyclistWithCountry('3', 'Aleksandra', 'Pavelyeva', '1100', 'Russia');
+        let Russia4 = new СyclistWithCountry('4', 'Olga', 'Smirnova', '800', 'Russia');
+        let russianСyclists = new OneCountryCyclistCollection('Russia', Russia1, Russia2, Russia3, Russia4);
+
+        let Denmark1 = new СyclistWithCountry('1', 'Jonas', 'Vingegaard', '1000', 'Denmark');
+        let Denmark2 = new СyclistWithCountry('2', 'Mikkel', 'Bjerg', '752', 'Denmark');
+        let Denmark3 = new СyclistWithCountry('3', 'Ida', 'Hansen', '356', 'Denmark');
+        let Denmark4 = new СyclistWithCountry('4', 'Olivia', 'Olsen', '401', 'Denmark');
+        let danishСyclists = new OneCountryCyclistCollection('Denmark', Denmark1, Denmark2, Denmark3, Denmark4);
+
+        let America1 = new СyclistWithCountry('5', 'Alex', 'Smith', '91', 'America');
+        let America2 = new СyclistWithCountry('6', 'Kevin', 'Black', '238', 'America');
+        let America3 = new СyclistWithCountry('7', 'Amily', 'West', '136', 'America');
+        let America4 = new СyclistWithCountry('8', 'Mary', 'Lost', '94', 'America');
+        let americanСyclists = new OneCountryCyclistCollection('America', America1, America2, America3, America4);
+
+        let Germany1 = new СyclistWithCountry('9', 'Hans', 'Schmidt', '1005', 'Germany');
+        let Germany2 = new СyclistWithCountry('10', 'Peter', 'Fischer', '921', 'Germany');
+        let Germany3 = new СyclistWithCountry('11', 'Anna', 'Lehmann', '300', 'Germany');
+        let Germany4 = new СyclistWithCountry('12', 'Barbara', 'Stolz', '412', 'Germany');
+        let germanСyclists = new OneCountryCyclistCollection('Germany', Germany1, Germany2, Germany3, Germany4);
+
+        let France1 = new СyclistWithCountry('13', 'Gabriel', 'Lemarchand', '1091', 'France');
+        let France2 = new СyclistWithCountry('14', 'Louis', 'Boucher', '233', 'France');
+        let France3 = new СyclistWithCountry('15', 'Jade', 'Tisserand', '398', 'France');
+        let France4 = new СyclistWithCountry('16', 'Mia', 'Boiteux', '461', 'France');
+        let frenchСyclists = new OneCountryCyclistCollection('France', France1, France2, France3, France4);
+
+        let Greece1 = new СyclistWithCountry('17', 'Adrian', 'Dampierre', '911', 'Greece');
+        let Greece2 = new СyclistWithCountry('18', 'Tezey', 'Baladionites', '228', 'Greece');
+        let Greece3 = new СyclistWithCountry('19', 'Alexandra', 'Valaresso', '399', 'Greece');
+        let Greece4 = new СyclistWithCountry('20', 'Delia', 'Orphanidi', '884', 'Greece');
+        let greekСyclists = new OneCountryCyclistCollection('Greece', Greece1, Greece2, Greece3, Greece4);
+
+        let Finland1 = new СyclistWithCountry('21', 'Makari', 'Laine', '771', 'Finland');
+        let Finland2 = new СyclistWithCountry('22', 'Pietari', 'Virtanen', '352', 'Finland');
+        let Finland3 = new СyclistWithCountry('23', 'Tarja', 'Makinen', '923', 'Finland');
+        let Finland4 = new СyclistWithCountry('24', ' Mimosa', 'Jarvinen', '477', 'Finland');
+        let finnishСyclists = new OneCountryCyclistCollection('Finland', Finland1, Finland2, Finland3, Finland4);
+
+        let Italy1 = new СyclistWithCountry('25', 'Johannes', 'Romano', '1006', 'Italy');
+        let Italy2 = new СyclistWithCountry('26', 'Marco', 'Medici', '222', 'Italy');
+        let Italy3 = new СyclistWithCountry('27', 'Margarita', 'Richi', '365', 'Italy');
+        let Italy4 = new СyclistWithCountry('28', 'Signora', 'Esposito', '940', 'Italy');
+        let italianСyclists = new OneCountryCyclistCollection('Italy', Italy1, Italy2, Italy3, Italy4);
+
+        let Spain1 = new СyclistWithCountry('29', 'Juan', 'Rodriguez', '1100', 'Spain');
+        let Spain2 = new СyclistWithCountry('30', 'Maria', 'Zapatero', '880', 'Spain');
+        let Spain3 = new СyclistWithCountry('31', 'Miguel', 'Moreno', '338', 'Spain');
+        let Spain4 = new СyclistWithCountry('32', 'Paola', ' Alegre', '478', 'Spain');
+        let spanishСyclists = new OneCountryCyclistCollection('Spain', Spain1, Spain2, Spain3, Spain4);
+        let allcyclist = new AllCountryCyclistCollection(belgianСyclists, russianСyclists,
+            danishСyclists, americanСyclists, germanСyclists,
+            frenchСyclists, greekСyclists, finnishСyclists, italianСyclists, spanishСyclists);
+        let n;
+        do {
+            n = parseInt(window.prompt("Введите количество этапов", ""), 10);
+        } while (isNaN(n));
+        console.log("ПЕРВЫЙ КРУГ И ВЫПОЛНЕНИЕ ЭТАПОВ");
+        allcyclist.firstProtocol(5);
+        confirm("Нажмите OK для формирования отчёта по второму этапу");
+        console.log("\nВТОРОЙ КРУГ И ВЫПОЛНЕНИЕ ЭТАПОВ");
+        allcyclist.secondProtocol();
+
+    </script>
+</body>
+
+</html>
