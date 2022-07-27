@@ -37,8 +37,7 @@
 
     var AllCountryCyslistPoint = [{'country':'Belgium','point':0},{'country':'Russia','point':0},{'country':'America','point':0},{'country':'Germany','point':0},{'country':'France','point':0},{'country':'Greece','point':0}];
     //======Функция для генерации нового объекта, чтобы корректно работал рандом===========
-    function createMassCyclists()
-    {
+    function createMassCyclists() {
         let object = [];
         object.push(new СyclistWithCountry('1', 'Wout', 'Van Aert', '2000', 'Belgium'))
         object.push(new СyclistWithCountry('2', 'Florian', 'Vermeersch', '700', 'Belgium'));
@@ -133,8 +132,7 @@
             tempMassCytalist.push({"name":`${el.name}`,"lastname":`${el.lastname}`,'time':0});
         })
         // Высчитываем время каждого
-        for (let i=0; i < N; i++) 
-        { 
+        for (let i=0; i < N; i++) { 
             AllCyclistsOneStage[i].forEach((el,index) => {
                 tempMassCytalist[index].time += el.timeSet;
             }) 
@@ -145,8 +143,7 @@
         })
         str += "==== Страны: ==== \r\n"    
         //---Страны-------------------------------
-        for (let i=0; i < N; i++) 
-        { 
+        for (let i=0; i < N; i++) { 
             str += `======= Этап ${i + 1} ======== \r\n`
             massStageCyslist[i].forEach((el,index) => {
                 // Индекс страны в массиве
@@ -162,10 +159,8 @@
         AllCountryCyslistPoint.sort(function(a, b) { return parseFloat(a.point) - parseFloat(b.point);});
 
         // Проверка на схожесть очков
-        for(let i = 1; i < AllCountryCyslistPoint.length; i++) 
-        {
-            if (AllCountryCyslistPoint[i - 1].point == AllCountryCyslistPoint[i].point) 
-            {
+        for(let i = 1; i < AllCountryCyslistPoint.length; i++) {
+            if (AllCountryCyslistPoint[i - 1].point == AllCountryCyslistPoint[i].point) {
                 let minCountry1 = 0;
                 let minCountry2 = 0;
 
@@ -174,8 +169,7 @@
                     if (el.country == AllCountryCyslistPoint[i].country) minCountry2 += el.minTime;
                 })
 
-                if (minCountry1 < minCountry2) 
-                {
+                if (minCountry1 < minCountry2) {
                     let temp = AllCountryCyslistPoint[i];
                     AllCountryCyslistPoint[i] = AllCountryCyslistPoint[i - 1];
                     AllCountryCyslistPoint[i - 1] =  AllCountryCyslistPoint[i];   
@@ -209,8 +203,7 @@
 
         let AllCyclistsFinal = [];
         // удаляем лишние страны
-        for(let i = 0; i < AllCyclists.length; i++)
-        {
+        for(let i = 0; i < AllCyclists.length; i++) {
             if (CountryFinal.indexOf(AllCyclists[i].country) != -1) AllCyclistsFinal.push(AllCyclists[i]);
         }
         // Раздаем время
@@ -219,8 +212,7 @@
         // Подсчет времени
         massStageCyslist = [];
 
-        for (let i=0; i < N; i++) 
-        {    
+        for (let i=0; i < N; i++) {    
             massStageCyslist[i] = [];
 
             CountryFinal.forEach(el=>{
@@ -236,8 +228,7 @@
             massStageCyslist[i].sort(function(a, b) { return parseFloat(a.minTime) - parseFloat(b.minTime);});
         }
         // Подсчет мест
-        for (let i=0; i < N; i++) 
-        { 
+        for (let i=0; i < N; i++) { 
             str += `======= Этап ${i + 1} ======== \r\n`
             massStageCyslist[i].forEach((el,index) => {
                 // Индекс страны в массиве
@@ -251,10 +242,8 @@
         CountryFinalPoint.sort(function(a, b) { return parseFloat(a.point) - parseFloat(b.point);});
         
         // Проверка на схожесть очков
-        for(let i = 1; i < CountryFinalPoint.length; i++) 
-        {
-            if (CountryFinalPoint[i - 1].point == CountryFinalPoint[i].point) 
-            {
+        for(let i = 1; i < CountryFinalPoint.length; i++) {
+            if (CountryFinalPoint[i - 1].point == CountryFinalPoint[i].point) {
                 let avgCountry1 = 0;
                 let avgCountry2 = 0;
 
@@ -263,8 +252,7 @@
                     if (el.country == CountryFinalPoint[i].country) avgCountry2 += el.rating;
                 })
 
-                if ((avgCountry1/4) < (avgCountry2/4)) 
-                {
+                if ((avgCountry1/4) < (avgCountry2/4)) {
                     let temp = CountryFinalPoint[i];
                     CountryFinalPoint[i] = CountryFinalPoint[i - 1];
                     CountryFinalPoint[i - 1] =  CountryFinalPoint[i];   
