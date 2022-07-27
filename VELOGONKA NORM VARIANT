@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Велогонка</title>
+</head>
+<body>
+<script>
+    // Создаем класс ==========================
+    class Сyclist {
+        constructor(number, name, lastname, rating) {
+        this.number = number;
+        this.name = name;
+        this.lastname = lastname;
+        this.rating = rating;
+        }
+    }
+
+    //создать подкласс гонщика с дополнительным полем country
+    class СyclistWithCountry extends Сyclist {
+        constructor(number, name, lastname, rating, country) {
+        super(number, name, lastname, rating);
+        this.country = country;
+        this.timeSet = 0;
+        }
+    }
+    // Переменные
+    var N = 0;
+    //экземпляр гонщиков всех стран
+    var AllCyclists = [];
+    AllCyclists = createMassCyclists();
+    //экземпляр гонщиков всех стран по этапам
+    AllCyclistsOneStage = [];
+
+    var AllCountryCyslist = ['Belgium','Russia','America','Germany','France','Greece'];
+
+    var AllCountryCyslistPoint = [{'country':'Belgium','point':0},{'country':'Russia','point':0},{'country':'America','point':0},{'country':'Germany','point':0},{'country':'France','point':0},{'country':'Greece','point':0}];
+    //======Функция для генерации нового объекта, чтобы корректно работал рандом===========
+    function createMassCyclists()
+    {
+        let object = [];
+        object.push(new СyclistWithCountry('1', 'Wout', 'Van Aert', '2000', 'Belgium'))
+        object.push(new СyclistWithCountry('2', 'Florian', 'Vermeersch', '700', 'Belgium'));
+        object.push(new СyclistWithCountry('3', 'Maria', 'Dumont', '500', 'Belgium'));
+        object.push(new СyclistWithCountry('4', 'Nicole', 'Claes', '400', 'Belgium'));
+
+        object.push(new СyclistWithCountry('1', 'Ivan', 'Zolotarev', '2200', 'Russia'));
+        object.push(new СyclistWithCountry('2', 'Petr', 'Ivanov', '730', 'Russia'));
+        object.push(new СyclistWithCountry('3', 'Aleksandra', 'Pavelyeva', '1100', 'Russia'));
+        object.push(new СyclistWithCountry('4', 'Olga', 'Smirnova', '800', 'Russia'));
+            
+        object.push(new СyclistWithCountry('5', 'Alex', 'Smith', '91', 'America'));
+        object.push(new СyclistWithCountry('6', 'Kevin', 'Black', '238', 'America'));
+        object.push(new СyclistWithCountry('7', 'Amily', 'West', '136', 'America'));
+        object.push(new СyclistWithCountry('8', 'Mary', 'Lost', '94', 'America'));
+            
+        object.push(new СyclistWithCountry('9', 'Hans','Schmidt', '1005',  'Germany'));
+        object.push(new СyclistWithCountry('10','Peter', 'Fischer', '921', 'Germany'));
+        object.push(new СyclistWithCountry('11','Anna', 'Lehmann', '300', 'Germany'));
+        object.push(new СyclistWithCountry('12','Barbara', 'Stolz', '412', 'Germany'));
+            
+        object.push(new СyclistWithCountry('13', 'Gabriel', 'Lemarchand', '1091', 'France'));
+        object.push(new СyclistWithCountry('14', 'Louis', 'Boucher', '233', 'France'));
+        object.push(new СyclistWithCountry('15', 'Jade', 'Tisserand', '398', 'France'));
+        object.push(new СyclistWithCountry('16', 'Mia', 'Boiteux', '461', 'France'));
+            
+        object.push(new СyclistWithCountry('17', 'Adrian', 'Dampierre', '911', 'Greece'));
+        object.push(new СyclistWithCountry('18', 'Tezey', 'Baladionites', '228','Greece'));
+        object.push(new СyclistWithCountry('19', 'Alexandra', 'Valaresso', '399','Greece'));
+        object.push(new СyclistWithCountry('20', 'Delia', 'Orphanidi', '884','Greece'));
+
+        return object;    
+    }
+    //============================================================
+    // Случайное время
+    function randomTime() {
+        let time = Math.random() * 100;
+        //округлить до сотых
+        time = Math.round(time * 100) / 100;
+        return time;
+    }
+    //============================================================
+    function timeSetCyclist() {
+        let tempCyclists = [];
+        tempCyclists = createMassCyclists();
+        tempCyclists.forEach(el =>{el.timeSet = randomTime()})
+        return tempCyclists;
+    }
+    //============================================================
+    function programmGo() {
+
+        //количество этапов ввод пользователя
+        N = +prompt('Введите количество этапов:') * 1;
+        // Проверка на ввод информации
+        if (!(Number.isInteger(N)) || (N <= 0)) 
+        {
+            alert ('Введите корректное число!');
+            return;
+        }
+        //=====================
+        for (let i=0; i < N; i++) 
+        {
+            let temp = timeSetCyclist(AllCyclists);
+            AllCyclistsOneStage.push(temp);
+        }
+        let massStageCyslist = [];
+        //---Высчитываем 1 этап и ставим время--------
+        for (let i=0; i < N; i++) 
+        {    
+            massStageCyslist[i] = [];
+
+            AllCountryCyslist.forEach(el=>{
+                //-------------------
+                let maxTime = 0;
+                let minTime = 100000;
+                AllCyclistsOneStage[i].forEach(el2 => {
+                    if ((el == el2.country) && (maxTime < el2.timeSet)) maxTime = el2.timeSet
+                    if ((el == el2.country) && (minTime > el2.timeSet)) minTime = el2.timeSet
+                })
+                //-------------------
+                massStageCyslist[i].push({"country":el,"time":maxTime, "minTime": minTime}) 
+            })
+            //============================
+            massStageCyslist[i].sort(function(a, b) { return parseFloat(a.time) - parseFloat(b.time);});
+        }
+        //---Вывод информации по 1 этапу------------
+        let str = "==== Протокол по 1 этапу ==== \r\n===Спортсмены: ===\r\n";
+        //---Гонщики------------------------------
+        // Временный массив с гонщиками
+        let tempMassCytalist = [];
+        AllCyclistsOneStage[0].forEach(el =>{
+            tempMassCytalist.push({"name":`${el.name}`,"lastname":`${el.lastname}`,'time':0});
+        })
+        // Высчитываем время каждого
+        for (let i=0; i < N; i++) 
+        { 
+            AllCyclistsOneStage[i].forEach((el,index) => {
+                tempMassCytalist[index].time += el.timeSet;
+            }) 
+        }
+        // Создаем строку для вывода
+        tempMassCytalist.forEach(el =>{
+            str += `${el.name} ${el.lastname} - ${el.time.toFixed(2)} \r\n`
+        })
+        str += "==== Страны: ==== \r\n"    
+        //---Страны-------------------------------
+        for (let i=0; i < N; i++) 
+        { 
+            str += `======= Этап ${i + 1} ======== \r\n`
+            massStageCyslist[i].forEach((el,index) => {
+                // Индекс страны в массиве
+               let ind = AllCountryCyslistPoint.map(function(e) { return e.country; }).indexOf(el.country);
+               AllCountryCyslistPoint[ind].point += index + 1;
+               // Формируем строку для вывода
+               str += `${index + 1} ) ${el.country} - ${el.time} \r\n`;
+
+            })    
+        }
+        //------------------------    
+        // Сортировка победителей
+        AllCountryCyslistPoint.sort(function(a, b) { return parseFloat(a.point) - parseFloat(b.point);});
+
+        // Проверка на схожесть очков
+        for(let i = 1; i < AllCountryCyslistPoint.length; i++) 
+        {
+            if (AllCountryCyslistPoint[i - 1].point == AllCountryCyslistPoint[i].point) 
+            {
+                let minCountry1 = 0;
+                let minCountry2 = 0;
+
+                massStageCyslist.forEach(el =>{
+                    if (el.country == AllCountryCyslistPoint[i - 1].country) minCountry1 += el.minTime;
+                    if (el.country == AllCountryCyslistPoint[i].country) minCountry2 += el.minTime;
+                })
+
+                if (minCountry1 < minCountry2) 
+                {
+                    let temp = AllCountryCyslistPoint[i];
+                    AllCountryCyslistPoint[i] = AllCountryCyslistPoint[i - 1];
+                    AllCountryCyslistPoint[i - 1] =  AllCountryCyslistPoint[i];   
+                }
+            }
+        }
+        // Вывод результата и протокола
+        str += `====== Результат ====== \r\n`;
+        AllCountryCyslistPoint.forEach((el,index) =>{
+            str += `Место - ${index + 1} ) ${el.country} - ${el.point} \r\n`;
+        })
+        // Вывод (Если отмена то заканчиваем)
+        result = confirm(str);
+        if (!result) return false;
+
+        //*********************************************************************************
+        //======================Второй этап ===============================================
+        //*********************************************************************************
+        N = 2;
+        str = "=== Второй этап ======= \r\n";
+
+        // Массив стран финалистов
+        let CountryFinal = [AllCountryCyslistPoint[0].country,AllCountryCyslistPoint[1].country,AllCountryCyslistPoint[2].country,AllCountryCyslistPoint[3].country];
+        // Массив для отбора мест
+        let CountryFinalPoint = [{'country':AllCountryCyslistPoint[0].country,'point':0},
+                                {'country':AllCountryCyslistPoint[1].country,'point':0},
+                                {'country':AllCountryCyslistPoint[2].country,'point':0},
+                                {'country':AllCountryCyslistPoint[3].country,'point':0}];
+
+        AllCyclistsOneStage = [];
+
+        let AllCyclistsFinal = [];
+        // удаляем лишние страны
+        for(let i = 0; i < AllCyclists.length; i++)
+        {
+            if (CountryFinal.indexOf(AllCyclists[i].country) != -1) AllCyclistsFinal.push(AllCyclists[i]);
+        }
+        // Раздаем время
+        for (let i=0; i < N; i++) AllCyclistsOneStage.push(timeSetCyclist(AllCyclistsFinal))
+        
+        // Подсчет времени
+        massStageCyslist = [];
+
+        for (let i=0; i < N; i++) 
+        {    
+            massStageCyslist[i] = [];
+
+            CountryFinal.forEach(el=>{
+                //-------------------
+                let minTime = 100000;
+                AllCyclistsOneStage[i].forEach(el2 => {
+                    if ((el == el2.country) && (minTime > el2.timeSet)) minTime = el2.timeSet
+                })
+                //-------------------
+                massStageCyslist[i].push({"country":el, "minTime": minTime}) 
+            })
+            //============================
+            massStageCyslist[i].sort(function(a, b) { return parseFloat(a.minTime) - parseFloat(b.minTime);});
+        }
+        // Подсчет мест
+        for (let i=0; i < N; i++) 
+        { 
+            str += `======= Этап ${i + 1} ======== \r\n`
+            massStageCyslist[i].forEach((el,index) => {
+                // Индекс страны в массиве
+               let ind = CountryFinalPoint.map(function(e) { return e.country; }).indexOf(el.country);
+               CountryFinalPoint[ind].point += index + 1;
+               // Формируем строку для вывода
+               str += `${index + 1} ) ${el.country} - ${el.minTime} \r\n`;
+            })    
+        }
+        // Сортировка победителей
+        CountryFinalPoint.sort(function(a, b) { return parseFloat(a.point) - parseFloat(b.point);});
+        
+        // Проверка на схожесть очков
+        for(let i = 1; i < CountryFinalPoint.length; i++) 
+        {
+            if (CountryFinalPoint[i - 1].point == CountryFinalPoint[i].point) 
+            {
+                let avgCountry1 = 0;
+                let avgCountry2 = 0;
+
+                AllCyclists.forEach(el =>{
+                    if (el.country == CountryFinalPoint[i - 1].country) avgCountry1 += el.rating;
+                    if (el.country == CountryFinalPoint[i].country) avgCountry2 += el.rating;
+                })
+
+                if ((avgCountry1/4) < (avgCountry2/4)) 
+                {
+                    let temp = CountryFinalPoint[i];
+                    CountryFinalPoint[i] = CountryFinalPoint[i - 1];
+                    CountryFinalPoint[i - 1] =  CountryFinalPoint[i];   
+                }
+            }
+        }
+        // Вывод результата и протокол
+        str += `====== Результат ====== \r\n`;
+        CountryFinalPoint.forEach((el,index) =>{
+            str += `Место - ${index + 1} ) ${el.country} - ${el.point} \r\n`;
+        })
+
+        alert(str);
+        //------------------
+        alert (`Победитель ${CountryFinalPoint[0].country}`);
+    }
+    //-----------------------------
+    // Страртуем программу
+    programmGo();
+
+</script>    
+</body>
+</html>
