@@ -3,130 +3,127 @@
 <body>
     <script>
 
-        class Сyclist {                                             // базовый класс гонщика
-            constructor(number, name, lastname, rating) {
-                this.number = number;
-                this.name = name;
-                this.lastname = lastname;
-                this.rating = rating;
-            }
+    class Сyclist {                                             // базовый класс гонщика
+        constructor(number, name, lastname, rating) {
+            this.number = number;
+            this.name = name;
+            this.lastname = lastname;
+            this.rating = rating;
+        }
+    }
+
+    // создать подкласс гонщика с дополнительным полем country
+
+    class СyclistWithCountry extends Сyclist {
+        constructor(number, name, lastname, rating, country) {
+            super(number, name, lastname, rating);
+            this.country = country;
+        }
+    }
+
+    class OneCountryCyclistCollection extends Array {            // коллекция гонщиков одной страны
+        constructor(country, ...args) {
+            super(...args);
+            this.country = country;
+        }
+        push(country, ...args) {
+            if (this.country === country)
+                super.push(args);
+        }
+        calculateMeanRating() {                                  // метод для подсчёта среднего арифмитического рейтинга
+
+            let ans = 0;
+
+            for (let i = 0; i < this.length; i++)
+                ans += parseInt(this[i].rating);
+            return ans / this.length;
         }
 
-        // создать подкласс гонщика с дополнительным полем country
+    }
 
-
-        class СyclistWithCountry extends Сyclist {
-            constructor(number, name, lastname, rating, country) {
-                super(number, name, lastname, rating);
-                this.country = country;
-            }
-        }
-
-
-        class OneCountryCyclistCollection extends Array {            // коллекция гонщиков одной страны
-            constructor(country, ...args) {
+    class AllCountryCyclistCollection extends Array {            // коллекция из коллекций гонщиков одной страны. содержит всех гонщиков
+        constructor(...args) {
+            if (args[0] instanceof OneCountryCyclistCollection)  // можно добавлять коллекцию гонщиков
                 super(...args);
-                this.country = country;
-            }
-            push(country, ...args) {
-                if (this.country === country)
-                    super.push(args);
-            }
-            calculateMeanRating() {                                  // метод для подсчёта среднего арифмитического рейтинга
-
-                let ans = 0;
-
-                for (let i = 0; i < this.length; i++)
-                    ans += parseInt(this[i].rating);
-                return ans / this.length;
-            }
-
+        }
+        push(...args) {
+            if (args[0] instanceof OneCountryCyclistCollection)
+                super.push(...args);
         }
 
-        class AllCountryCyclistCollection extends Array {            // коллекция из коллекций гонщиков одной страны. содержит всех гонщиков
-            constructor(...args) {
-                if (args[0] instanceof OneCountryCyclistCollection)  // можно добавлять коллекцию гонщиков
-                    super(...args);
-            }
-            push(...args) {
-                if (args[0] instanceof OneCountryCyclistCollection)
-                    super.push(...args);
-            }
+        generateTimeFinish() {                                   // генерация времени заезда для каждого гонщика. Возвращает массив со всеми гонщиками, участвовавших в заезде
 
-            generateTimeFinish() {                                   // генерация времени заезда для каждого гонщика. Возвращает массив со всеми гонщиками, участвовавших в заезде
+            let ans = [];
 
-                let ans = [];
-
-                for (let i = 0; i < this.length; i++) {
-                    for (let j = 0; j < this[i].length; j++) {
-                        this[i][j].time_finish = Math.floor(Math.random() * 1000);
-                        if (i === 0)
-                            this[i][j].sum_time = this[i][j].time_finish;
-                        else
-                            this[i][j].sum_time += this[i][j].time_finish;
-                        ans.push(this[i][j]);
-                    }
-                }
-
-                return ans;
-            }
-            getPositionForCyclists(cyclists, firstturn = true) {          // определяет позицию гонщиков в заезде
-
-                for (let i = 0; i < this.length; i++) {
-                    for (let j = 0; j < this[i].length; j++) {
-                        this[i][j].position = cyclists.indexOf(this[i][j]) + 1;
-                    }
-                    if (firstturn)
-                        this[i].sort((a, b) => { { return b.position - a.position; } });
+            for (let i = 0; i < this.length; i++) {
+                for (let j = 0; j < this[i].length; j++) {
+                    this[i][j].time_finish = Math.floor(Math.random() * 1000);
+                    if (i === 0)
+                        this[i][j].sum_time = this[i][j].time_finish;
                     else
-                        this[i].sort((a, b) => { { return a.position - b.position; } });
-                }
-            }
-            simulateTurn(n, firstturn = true) {                             // симулирует круг из n этапов. firstturn = true для первого круга и false для второго
-
-                for (let i = 0; i < n; i++) {
-                    var ans = this.generateTimeFinish();
-                    ans.sort((a, b) => { return a.time_finish - b.time_finish; });
-                    this.getPositionForCyclists(ans, firstturn);
-                    for (let j = 0; j < this.length; j++) {
-                        if (i === 0)
-                            this[j].position = this[j][0].position;
-                        else
-                            this[j].position += this[j][0].position;
-                    }
+                        this[i][j].sum_time += this[i][j].time_finish;
+                    ans.push(this[i][j]);
                 }
             }
 
-            firstProtocol(n) {                                             // сформировать первый протокол
-                this.simulateTurn(n)
-                for (let i = 0; i < this.length; i++)
-                    this[i].sort((a, b) => { return a.sum_time - b.sum_time });
-                this.sort((a, b) => { return a.position - b.position || a[0].sum_time - b[0].sum_time; });
-                for (let i = 0; i < this.length; i++) {
-                    console.log(this[i][0].country, "заняла", i + 1, "место");
-                    for (let j = 0; j < this[i].length; j++) {
-                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
-                    }
+            return ans;
+        }
+
+        getPositionForCyclists(cyclists, firstturn = true) {          // определяет позицию гонщиков в заезде
+
+            for (let i = 0; i < this.length; i++) {
+                for (let j = 0; j < this[i].length; j++) {
+                    this[i][j].position = cyclists.indexOf(this[i][j]) + 1;
                 }
+                if (firstturn)
+                    this[i].sort((a, b) => { { return b.position - a.position; } });
+                else
+                    this[i].sort((a, b) => { { return a.position - b.position; } });
             }
-        
+        }
 
-            secondProtocol() {                                             // сформировать второй протокол
+        simulateTurn(n, firstturn = true) {                             // симулирует круг из n этапов. firstturn = true для первого круга и false для второго
 
-                while (this.length > 4)
-                    this.pop();
-                this.simulateTurn(2, false);
-                this.sort((a, b) => { return b.position - a.position || a.calculateMeanRating() - b.calculateMeanRating(); });
-                for (let i = 0; i < this.length; i++) {
-                    console.log(this[i][0].country, "заняла", i + 1, "место");
-                    for (let j = 0; j < this[i].length; j++) {
-                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
-                    }
+            for (let i = 0; i < n; i++) {
+                var ans = this.generateTimeFinish();
+                ans.sort((a, b) => { return a.time_finish - b.time_finish; });
+                this.getPositionForCyclists(ans, firstturn);
+                for (let j = 0; j < this.length; j++) {
+                    if (i === 0)
+                        this[j].position = this[j][0].position;
+                    else
+                        this[j].position += this[j][0].position;
                 }
             }
         }
-                    
 
+        firstProtocol(n) {                                             // сформировать первый протокол
+            this.simulateTurn(n)
+            for (let i = 0; i < this.length; i++)
+                this[i].sort((a, b) => { return a.sum_time - b.sum_time });
+            this.sort((a, b) => { return a.position - b.position || a[0].sum_time - b[0].sum_time; });
+            for (let i = 0; i < this.length; i++) {
+                console.log(this[i][0].country, "заняла", i + 1, "место");
+                for (let j = 0; j < this[i].length; j++) {
+                    console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
+                }
+            }
+        }
+        
+        secondProtocol() {                                             // сформировать второй протокол
+            while (this.length > 4)
+                this.pop();
+            this.simulateTurn(2, false);
+            this.sort((a, b) => { return b.position - a.position || a.calculateMeanRating() - b.calculateMeanRating(); });
+            for (let i = 0; i < this.length; i++) {
+                console.log(this[i][0].country, "заняла", i + 1, "место");
+                for (let j = 0; j < this[i].length; j++) {
+                    console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
+                }
+            }
+        }
+    }
+                    
         // экземпляр гонщиков всех стран
 
         let Belgium1 = new СyclistWithCountry('1', 'Wout', 'Van Aert', '2000', 'Belgium');
