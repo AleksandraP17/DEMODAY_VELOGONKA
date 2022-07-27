@@ -97,6 +97,20 @@
                 }
             }
 
+            firstProtocol(n) {                                             // сформировать первый протокол
+                this.simulateTurn(n)
+                for (let i = 0; i < this.length; i++)
+                    this[i].sort((a, b) => { return a.sum_time - b.sum_time });
+                this.sort((a, b) => { return a.position - b.position || a[0].sum_time - b[0].sum_time; });
+                for (let i = 0; i < this.length; i++) {
+                    console.log(this[i][0].country, "заняла", i + 1, "место");
+                    for (let j = 0; j < this[i].length; j++) {
+                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
+                    }
+                }
+            }
+        
+
             secondProtocol() {                                             // сформировать второй протокол
 
                 while (this.length > 4)
@@ -110,19 +124,8 @@
                     }
                 }
             }
-            firstProtocol(n) {                                             // сформировать первый протокол
-                this.simulateTurn(n)
-                for (let i = 0; i < this.length; i++)
-                    this[i].sort((a, b) => { return a.sum_time - b.sum_time });
-                this.sort((a, b) => { return a.position - b.position || a[0].sum_time - b[0].sum_time; });
-                for (let i = 0; i < this.length; i++) {
-                    console.log(this[i][0].country, "заняла", i + 1, "место");
-                    for (let j = 0; j < this[i].length; j++) {
-                        console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
-                    }
-                }
-            }
         }
+                    
 
         // экземпляр гонщиков всех стран
 
@@ -189,7 +192,7 @@
         let allcyclist = new AllCountryCyclistCollection(belgianСyclists, russianСyclists,
             danishСyclists, americanСyclists, germanСyclists,
             frenchСyclists, greekСyclists, finnishСyclists, italianСyclists, spanishСyclists);
-            
+
         let n;
         do {
            n = parseInt(window.prompt("Введите количество этапов", ""), 10);
