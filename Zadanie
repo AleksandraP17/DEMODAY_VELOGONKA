@@ -121,6 +121,7 @@
                     console.log("\t", this[i][j].name, this[i][j].lastname, " занял", i * 4 + j + 1, "место");
                 }
             }
+            console.log("\nУра," , this[0][0].country , "заняла", 1, "место!!!");
         }
     }
                     
