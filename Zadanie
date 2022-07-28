@@ -30,7 +30,7 @@
             if (this.country === country)
                 super.push(args);
         }
-        calculateMeanRating() {                                  // метод для подсчёта среднего арифмитического рейтинга
+        calculateMeanRating() {                                  // метод для подсчёта среднего арифметического рейтинга
 
             let ans = 0;
 
